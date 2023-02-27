@@ -1,4 +1,6 @@
-типа сети
+Логин с паролем admin
+http://192.168.0.1/goform/goform_set_cmd_process?isTest=false&goformId=LOGIN&password=YWRtaW4=
+Смена типа сети
 POST
 http://192.168.0.1/goform/goform_set_cmd_process
 goformId: SET_BEARER_PREFERENCE
