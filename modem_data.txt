@@ -1,0 +1,23 @@
+типа сети
+POST
+http://192.168.0.1/goform/goform_set_cmd_process
+goformId: SET_BEARER_PREFERENCE
+BearerPreference: Only_LTE (4G)
+BearerPreference: TD_W (3G)
+
+Установка соединения и разрыв
+notCallback: true
+goformId: CONNECT_NETWORK
+goformId: DISCONNECT_NETWORK
+
+Выключить WIFI
+goformId:SET_WIFI_INFO
+wifiEnabled:0
+
+Отключиться
+http://192.168.0.1/goform/goform_set_cmd_process?notCallback=true&goformId=DISCONNECT_NETWORK
+Сменить сеть
+http://192.168.0.1/goform/goform_set_cmd_process?goformId=SET_BEARER_PREFERENCE&BearerPreference=TD_W
+http://192.168.0.1/goform/goform_set_cmd_process?goformId=SET_BEARER_PREFERENCE&BearerPreference=Only_LTE
+Подключиться
+http://192.168.0.1/goform/goform_set_cmd_process?notCallback=true&goformId=CONNECT_NETWORK
