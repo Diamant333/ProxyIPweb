@@ -1,5 +1,7 @@
 from flask import Flask
 import requests
+import os
+import time
 
 app = Flask(__name__)
 
@@ -11,16 +13,17 @@ def hello_world():
 
 @app.route('/<ip_address>')
 def print_ip_address(ip_address):
-    ip_avail = 0
-    http_get_address = 'http://{}'.format(ip_address)
-    try:
-        ip_avail = requests.get(http_get_address)
-    except Exception as e:
-        mod_status = 'NoStatus'
-    else:
-        mod_status = 'Ok'
+    result = os.system("ping -c 1 " + ip_address)
+    stop = 0
+    while result != 0:
+        time.sleep(10)
+        result = os.system("ping -c 1 " + ip_address)
+        print('Ожидаем связи с модемом')
+        stop += 1
+        if stop > 3:
+            break
 
-    return [ip_address, mod_status]
+    return ip_address
 
 
 if __name__ == '__main__':
