@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+<div class="row">
+    <form action="" method="post">
+    <div class="col-md-5">
+        <label for="exampleInputEmail1" class="form-label">Путь к файлу</label>
+        <input type="text" class="form-control" id="path" aria-describedby="emailHelp" placeholder="{{ path_data }}" name="path">
+        <div id="emailHelp" class="form-text">Введите путь до файла конфигурации 3proxy</div>
+    </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+</form>
+</div>
+
+
+
+
+
+</div>
+
+
+{% endblock %}
