@@ -23,3 +23,13 @@ http://192.168.0.1/goform/goform_set_cmd_process?goformId=SET_BEARER_PREFERENCE&
 http://192.168.0.1/goform/goform_set_cmd_process?goformId=SET_BEARER_PREFERENCE&BearerPreference=Only_LTE
 Подключиться
 http://192.168.0.1/goform/goform_set_cmd_process?notCallback=true&goformId=CONNECT_NETWORK
+\
+
+            {% if proxy_status(ip_address) %}
+                        {% else %}
+                                    {% endif %}
+                        <td><button type="button" class="btn btn-danger" id = "{{ ip_address }}">No</button></td>
+
+document.getElementById('{{ ip_address }}').onclick = function(){
+    this.textContent = '{{ proxy_status(ip_address) }}';
+}

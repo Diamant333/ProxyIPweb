@@ -8,30 +8,52 @@ app = Flask(__name__, template_folder="template")
 
 @app.route('/')
 def index():
+    proxy_list = []
+    with open('config.cfg', 'r') as f:
+        lines = f.readlines()
+        if lines:
+            path_data = lines[0].strip()
+            with open(path_data, 'r') as proxy:
+                proxy_lines = proxy.readlines()
+                for proxy_line in proxy_lines:
+                    if 'proxy' in proxy_line:
+                        start = proxy_line.find('-e') + 2
+                        end = proxy_line.find('\n', start)
+                        proxy_list.append(proxy_line[start:end])
 
-    return render_template('index.html')
+    def proxy_status(ip_address):
+        result = os.system("ping -c 1 " + ip_address)
+        if result == 0:
+            status = True
+        else:
+            status = False
+        return status
+
+    return render_template('index.html', proxy_list=proxy_list, proxy_status=proxy_status)
+
 
 
 @app.route('/setting/', methods=['post', 'get'])
 def setting():
 
     with open('config.cfg', 'r') as f:
-        if f.readlines():
-            lineas = f.readlines()
-            print(lineas)
+        lineas = f.readlines()
+        if lineas:
             path_data = lineas[0].strip()
+        else:
+            path_data = 'введите путь'
+
     if request.method == 'POST':
         with open('config.cfg', 'r') as f1, open('config.cfg', 'w') as f2:
             lines = f1.readlines()
+            if lines:
+                lines[0] = request.form.get('path')
+            else:
+                f2.write(request.form.get('path'))
+                path_data = request.form.get('path')
 
-            for line in lines:
-                line = line.strip()
-                if line == path_data:
-                    f2.write(request.form.get('path'))
-                else:
-                    f2.write(request.form.get('path'))
+    return render_template('setting.html', path_data=path_data)
 
-    return render_template('setting.html')
 
 @app.route('/<ip_address>')
 def print_ip_address(ip_address):
@@ -49,6 +71,18 @@ def print_ip_address(ip_address):
 
     return render_template('index.html', ip_address=ip_address, status=status)
 
+
+@app.route('/ipping')
+def proxy_status():
+    global st
+    if request.method == 'GET':
+        ip_address = request.args.get('ip_address')
+        result = os.system("ping -c 1 " + ip_address)
+        if result == 0:
+            st = True
+        else:
+            st = False
+    return str(st)
 
 if __name__ == '__main__':
     app.run(debug=True)

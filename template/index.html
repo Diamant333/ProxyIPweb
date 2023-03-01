@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <table class="table">
+        <tr>
+            <th scope="col">Адрес</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Управление</th>
+        </tr>
+        {% for ip_address in proxy_list %}
+        <tr>
+            <td>{{ ip_address }}</td>
+
+            <td><button type="button" class="btn btn-success" id="{{ ip_address }}">Ok</button></td>
+
+            <td>
+               <a href="/{{ ip_address }}"><button type="button" class="btn btn-primary">RenewIP</button></a>
+            </td>
+        </tr>
+
+        {% endfor %}
+    </table>
+
+</div>
+<script type="text/javascript">
+{% for ip_address in proxy_list %}
+	$( document ).ready(function(){
+	    var formData = "ip_address={{ ip_address }}";
+	    $.get( "/ipping?", formData, function( data ) {
+	      $( '#{{ ip_address }}' ).ready(function() {
+        $(this).text( data );
+    });
+	});
+{% endfor %}
+
+
+{% endblock %}
