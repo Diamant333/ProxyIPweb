@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import requests
 import os
 import time
+import json
 
 app = Flask(__name__, template_folder="template")
 
@@ -18,7 +19,7 @@ def index():
                 for proxy_line in proxy_lines:
                     if 'proxy' in proxy_line:
                         start = proxy_line.find('-e') + 2
-                        end = proxy_line.find('\n', start)
+                        end = proxy_line.find('00\n', start)
                         proxy_list.append(proxy_line[start:end])
 
     def proxy_status(ip_address):
@@ -57,14 +58,14 @@ def setting():
 
 @app.route('/<ip_address>')
 def print_ip_address(ip_address):
-    result = os.system("ping -c 1 " + ip_address)
+    result = os.system("ping /n 1 " + ip_address)
     stop = 0
     status = 'Ok'
     while result != 0:
         if stop > 3:
             status = 'No connect'
             break
-        result = os.system("ping -c 1 " + ip_address)
+        result = os.system("ping /n 1 " + ip_address)
         print('Ожидаем связи с модемом')
         time.sleep(10)
         stop += 1
@@ -77,12 +78,34 @@ def proxy_status():
     global st
     if request.method == 'GET':
         ip_address = request.args.get('ip_address')
-        result = os.system("ping -c 1 " + ip_address)
+        result = os.system("ping /n 1 " + ip_address)
         if result == 0:
-            st = True
+            st = 'True'
         else:
-            st = False
+            st = 'False'
     return str(st)
 
+@app.route('/speed')
+def get_speed():
+    global st
+    if request.method == 'GET':
+        ip_address = request.args.get('ip_address')
+
+        requests.get('http://{}/goform/goform_set_cmd_process?isTest=false&goformId=LOGIN&password=YWRtaW4='.format(ip_address))
+        result = requests.get('http://{}/goform/goform_get_cmd_process?multi_data=1&sms_received_flag_flag=0&sts_received_flag_flag=0&cmd=realtime_tx_thrpt%2Crealtime_rx_thrpt'.format(ip_address))
+        data = result.json()
+
+    return data
+
+@app.route('/renew')
+def renew():
+    if request.method == 'GET':
+        ip_address = request.args.get('ip_address')
+        auth_modem = 'http://{}/goform/goform_set_cmd_process?isTest=false&goformId=LOGIN&password=YWRtaW4='.format(ip_address)
+        reboot_modem = 'http://{}/goform/goform_set_cmd_process?isTest=false&goformId=TURN_OFF_DEVICE'.format(ip_address)
+        requests.get(auth_modem)
+        requests.get(reboot_modem)
+    return "Ok"
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='10.42.0.11', debug=True)

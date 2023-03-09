@@ -33,3 +33,28 @@ http://192.168.0.1/goform/goform_set_cmd_process?notCallback=true&goformId=CONNE
 document.getElementById('{{ ip_address }}').onclick = function(){
     this.textContent = '{{ proxy_status(ip_address) }}';
 }
+
+	$( document ).ready(function(){
+	    var formData = "ip_address={{ ip_address }}";
+	    $.get( "/ipping?", formData, function( data ) {
+	      $( '#{{ ip_address }}' ).ready(function() {
+        $(this).text( data );
+    });
+	});
+
+        $( "#{{ loop.revindex }}sp" ).html( res );
+
+        $.ajax({
+  url: "/speed",
+  data: {
+    ip_address: "{{ ip_address }}"
+  },
+  success: function( result ) {
+    
+    alert(result.obj.realtime_tx_thrpt);
+
+    
+    $( "#{{ loop.revindex }}sp" ).html( obj.realtime_tx_thrpt );
+    
+  }
+});

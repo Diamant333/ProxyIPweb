@@ -6,16 +6,19 @@
         <tr>
             <th scope="col">Адрес</th>
             <th scope="col">Статус</th>
+            <th scope="col">UpSpeed</th>
+            <th scope="col">DownSpeed</th>
             <th scope="col">Управление</th>
         </tr>
         {% for ip_address in proxy_list %}
         <tr>
             <td>{{ ip_address }}</td>
-
-            <td><button type="button" class="btn btn-success" id="{{ ip_address }}">Ok</button></td>
+            <td><button type="button" class="btn btn-warning" id="{{ loop.revindex }}">Loading...</button></td>
+            <td id="{{ loop.revindex }}up"></td>
+            <td id="{{ loop.revindex }}down"></td>
 
             <td>
-               <a href="/{{ ip_address }}"><button type="button" class="btn btn-primary">RenewIP</button></a>
+               <button type="button" id="{{ loop.revindex }}but" class="btn btn-primary">RenewIP</button>
             </td>
         </tr>
 
@@ -25,14 +28,65 @@
 </div>
 <script type="text/javascript">
 {% for ip_address in proxy_list %}
-	$( document ).ready(function(){
-	    var formData = "ip_address={{ ip_address }}";
-	    $.get( "/ipping?", formData, function( data ) {
-	      $( '#{{ ip_address }}' ).ready(function() {
-        $(this).text( data );
-    });
-	});
-{% endfor %}
 
+$( document ).ready(function() {
+setInterval(function(){
+$.ajax({
+  url: "/ipping",
+  data: {
+    ip_address: "{{ ip_address }}"
+  },
+  success: function( result ) {
+    if (result == "False") {
+    $( "#{{ loop.revindex }}" ).html( "No Connect" );
+    $( "#{{ loop.revindex }}" ).removeClass( "btn btn-warning" );
+    $( "#{{ loop.revindex }}" ).removeClass( "btn btn-success" );
+    $( "#{{ loop.revindex }}" ).addClass( "btn btn-danger" );
+    } else {
+    $( "#{{ loop.revindex }}" ).html( "Ok Connect" );
+    $( "#{{ loop.revindex }}" ).removeClass( "btn btn-warning" );
+    $( "#{{ loop.revindex }}" ).removeClass( "btn btn-danger" );
+    $( "#{{ loop.revindex }}" ).addClass( "btn btn-success" );
+    }
+    
+  }
+});
+}, 5000);
+});
+
+$( document ).ready(function() {
+setInterval(function(){
+
+$.ajax({
+  url: "/speed",
+  data: {
+    ip_address: "{{ ip_address }}"
+  },
+  dataType: 'json',
+  success: function( result ) {
+    $( "#{{ loop.revindex }}up" ).text( result.realtime_tx_thrpt );
+    $( "#{{ loop.revindex }}down" ).text( result.realtime_rx_thrpt );
+    
+  }
+});
+}, 1000);
+});
+
+$( "#{{ loop.revindex }}but" ).click(function(){
+  $.ajax({
+  url: "/renew",
+  data: {
+    ip_address: "{{ ip_address }}"
+  },
+  success: function( result ) {
+    
+  }
+});
+
+});
+
+
+{% endfor %}
+</script>
 
 {% endblock %}
