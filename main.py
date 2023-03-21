@@ -33,7 +33,7 @@ def index():
     return render_template('index.html', proxy_list=proxy_list, proxy_status=proxy_status)
 
 
-
+# Сохранение пути конфигурационного файда 3proxy
 @app.route('/setting/', methods=['post', 'get'])
 def setting():
 
@@ -72,7 +72,7 @@ def print_ip_address(ip_address):
 
     return render_template('index.html', ip_address=ip_address, status=status)
 
-
+# Получение статуса модема командой ping
 @app.route('/ipping')
 def proxy_status():
     global st
@@ -85,6 +85,7 @@ def proxy_status():
             st = 'False'
     return str(st)
 
+# Получение текущей скорости обмена у модема
 @app.route('/speed')
 def get_speed():
     global st
@@ -97,6 +98,7 @@ def get_speed():
 
     return data
 
+# Перезагрузка модема (получение нового адреса)
 @app.route('/renew')
 def renew():
     if request.method == 'GET':
@@ -107,5 +109,8 @@ def renew():
         requests.get(reboot_modem)
     return "Ok"
 
+
+
+# Запуск программы
 if __name__ == '__main__':
     app.run(host='10.42.0.11', debug=True)
